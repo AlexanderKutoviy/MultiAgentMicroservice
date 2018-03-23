@@ -1,6 +1,7 @@
 package gateway.api;
 
 import com.google.gson.Gson;
+import gateway.api.executor.JadeExecutor;
 import org.apache.logging.log4j.Logger;
 import spark.Request;
 import spark.Response;
@@ -13,7 +14,8 @@ public class Api {
     public Api() {
     }
 
-    public String getArticles(Request request, Response response) throws Exception {
-        return "Already started, man";
+    public String start(Request request, Response response) throws Exception {
+        JadeExecutor.execute();
+        return "Started";
     }
 }

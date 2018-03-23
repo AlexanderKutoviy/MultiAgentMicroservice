@@ -23,7 +23,7 @@ public class ApiGateway {
     public void start() {
         l.debug("Api gateway starting");
         httpService.ifPresent(http -> {
-            http.post("/start", api::getArticles);
+            http.post("/start", api::start);
             l.debug("Api gateway started");
         });
     }

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class JadeExecutor {
 
-    public void execute() throws StaleProxyException {
+    public static void execute() throws StaleProxyException {
         ArrayList<Agent> passengerAgents = new ArrayList<>();
         Runtime runtime = Runtime.instance();
         Profile profile = new ProfileImpl();
@@ -42,5 +42,9 @@ public class JadeExecutor {
             AgentController aeroDriverAgentController = mainContainer.acceptNewAgent("aeroDriverAgent" + i, aeroDriverAgent);
             aeroDriverAgentController.start();
         }
+    }
+
+    public static void main(String [] args) throws StaleProxyException {
+        execute();
     }
 }

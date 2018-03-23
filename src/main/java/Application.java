@@ -37,7 +37,7 @@ public class Application {
         service = httpServer();
         api = new Api();
         service.ifPresent(http -> {
-            http.get("/start", api::getArticles);
+            http.get("/start", api::start);
             l.debug("Api gateway started");
         });
 
