@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration shutdownHook="disable">
+    <ThresholdFilter level="all"/>
+	
+    <Appenders>
+        <Console name="consoleAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %-5p [%c] %m %n"/>
+        </Console>
+        <RollingFile name="File" fileName="logs/server.log" filePattern = "logs/server.%d{yyyy-MM-dd}.%i.log">
+            <PatternLayout pattern="%d %-5p [%c{1}] %m %n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="100"/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="com.mchange.v2" level="INFO" additivity="false">
+            <AppenderRef ref="consoleAppender"/>
+            <AppenderRef ref="File"/>
+        </Logger>
+		
+		<Logger name="org.apache.http" level="INFO" additivity="false">
+            <AppenderRef ref="consoleAppender"/>
+            <AppenderRef ref="File"/>
+        </Logger>
+                 
+        <Logger name="org.apache.http.wire" level="ERROR" additivity="false">
+            <AppenderRef ref="consoleAppender"/>
+			<AppenderRef ref="File"/>
+        </Logger>
+		
+        <Logger name="titanium.utils.httpclient" level="ERROR" additivity="false">
+            <AppenderRef ref="consoleAppender"/>
+			<AppenderRef ref="File"/>
+        </Logger>
+		
+        <Logger name="org.eclipse.jetty" level="INFO" additivity="false">
+            <AppenderRef ref="consoleAppender"/>
+			<AppenderRef ref="File"/>
+        </Logger>
+		
+        <Logger name="io.netty" level="INFO" additivity="false">
+            <AppenderRef ref="consoleAppender"/>
+			<AppenderRef ref="File"/>
+        </Logger>
+
+        <Logger name="log4jdbc" level="INFO" additivity="false">
+            <AppenderRef ref="consoleAppender"/>
+			<AppenderRef ref="File"/>
+        </Logger>
+		
+        <Root level="all">
+            <AppenderRef ref="consoleAppender"/>
+            <AppenderRef ref="File"/>
+        </Root>
+    </Loggers>
+</Configuration>
