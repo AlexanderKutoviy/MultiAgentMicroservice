@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="paybox.ant.utils" default="" basedir=".">
+
+    <target name="git-revision" description="Store git revision in ${git.revision}">
+        <local name="revision.raw"/>
+        <exec executable="git" outputproperty="revision.raw" failifexecutionfails="false" errorproperty="">
+            <arg value="rev-parse"/>
+            <arg value="HEAD"/>
+        </exec>
+        <!--        <exec executable="_utils/git/git.exe" outputproperty="revision.raw" failifexecutionfails="false" errorproperty="">
+                    <arg value="describe"/>
+                    <arg value="- -tags"/>
+                    <arg value="- -always"/>
+                    <arg value="HEAD"/>
+                </exec>-->
+        <propertyregex property="git.revision"
+                       input="${revision.raw}"
+                       regexp="^(.{7})"
+                       select="\1"
+                       casesensitive="false" />
+        <propertyregex property="git.revision-full"
+                       input="${revision.raw}"
+                       regexp="^(.{40})"
+                       select="\1"
+                       casesensitive="false" />
+        <echo message="Git revision: ${git.revision-full}"/>
+    </target>
+
+    <macrodef name="maven">
+        <attribute name="options" default="" />
+        <attribute name="goal" />
+        <attribute name="basedir" />
+        <attribute name="resultproperty" default="maven.result" />
+        <element name="args" implicit="true" optional="true" />
+        <sequential>
+            <java classname="org.codehaus.classworlds.Launcher" fork="true" failonerror="true"
+                  dir="@{basedir}" resultproperty="@{resultproperty}">
+                <jvmarg value="-Xmx512m"/>
+                <classpath>
+                    <fileset dir="${maven.home}/boot">
+                        <include name="*.jar" />
+                    </fileset>
+                    <fileset dir="${maven.home}/lib">
+                        <include name="*.jar" />
+                    </fileset>
+                </classpath>
+                <sysproperty key="classworlds.conf" value="${maven.home}/bin/m2.conf" />
+                <sysproperty key="maven.home" value="${maven.home}" />
+                <arg line="--batch-mode -T 1C ${maven.options} @{options} @{goal}" />
+            </java>
+        </sequential>
+    </macrodef>
+
+    <target name="antdebug">
+        <echoproperties/>
+    </target>
+</project>

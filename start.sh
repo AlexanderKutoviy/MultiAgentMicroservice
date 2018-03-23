@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 cd "$DIR"
 
@@ -14,7 +15,7 @@ fi
 
 filter="instance.id=$instance_id"
 
-nohup java -Dfile.encoding=UTF-8 -Dinstance.id=$instance_id -classpath agronomu_server.jar agronomu.server.AgronomuServer >/dev/null 2>&1  & echo ok
+nohup java -Dfile.encoding=UTF-8 -Dinstance.id=$instance_id -classpath m_agent_service.jar m_agent_service.Application >/dev/null 2>&1  & echo ok
 
 printf "\n"
 jps -v | grep $filter

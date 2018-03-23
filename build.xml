@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="http://www.ibm.com/developerworks/xml/library/x-antxsl/examples/example2/ant2html.xsl"?> 
+<project name="m_agent_service" default="jar" basedir=".">
+    <import file="_sandbox/utils.xml"/>
+
+    <target depends="init" description="Clean terminal project" name="clean">
+        <delete dir="_dist" includeemptydirs="true"/>
+    </target>
+
+    <target depends="init, clean" name="auto-daemon">
+        <maven basedir="m_agent_service" goal="clean install"/>
+        
+        <property name="dist_name" value="m_agent_service"/>
+        <property name="dist" value="_dist/${dist_name}"/>
+        <delete dir="${dist}" includeemptydirs="true"/>        
+        
+        <mkdir dir="${dist}"/>
+        <copy todir="${dist}/">
+            <fileset dir="_sandbox/daemon">
+                <exclude name="logs/**"/>
+                <exclude name="*.local.*"/>
+                <exclude name="**/.directory"/>
+                <exclude name="**/.gitignore"/>
+            </fileset>
+        </copy>
+        <copy todir="${dist}/lib">
+            <fileset dir="m_agent_service/target/lib"/>
+        </copy>
+        <copy tofile="${dist}/m_agent_service.jar" file="m_agent_service/target/m_agent_service-1.0.jar"/>
+        <move tofile="${dist}/config.properties.sample" file="${dist}/config.properties"/>
+
+
+        <chmod file="${dist}/*.sh" perm="ugo+x"/>
+		
+		<tar longfile="gnu"
+             destfile="${dist}/../${dist_name}.tar.gz"
+             compression="gzip"
+        >
+            <tarfileset dir="${dist}/../${dist_name}" filemode="755">
+                <include name="**/*.sh"/>
+            </tarfileset>
+            <tarfileset dir="${dist}/../${dist_name}">
+                <include name="**"/>
+                <exclude name="**/*.sh"/>
+            </tarfileset>
+        </tar>
+		<if>
+            <isset property="env.MAVEN_CLI_OPTS" />
+            <then>
+				<move file="${dist}/../${dist_name}.tar.gz" 
+					tofile="${dist}/../../${dist_name}.tar.gz" />
+			</then>
+        </if>
+    </target>
+	
+        
+    <target name="init">
+<!--        <path id="maven-ant-tasks.classpath" path="_utils/ant/maven-ant-tasks-2.1.4-SNAPSHOT.jar" />
+        <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+                 uri="antlib:org.apache.maven.artifact.ant"
+                 classpathref="maven-ant-tasks.classpath" />-->
+        
+        <taskdef resource="net/sf/antcontrib/antlib.xml"
+                 classpath="_utils/ant/ant-contrib.jar"/>
+        
+        <property file="config.properties"/>
+
+        <property environment="env"/>
+        <if>
+            <isset property="config.java.runtimes" />
+            <then></then>
+            <else>
+                <property name="config.java.runtimes" value="${env.JAVA_RUNTIMES}"/>
+            </else>
+        </if>
+        
+        <property name="maven.home" value="${basedir}/_utils/maven"/>
+        <property name="config.runtime.version" value="1.8.0"/>
+
+        <condition property="user.properties.file" value="${env.NETBEANS_USER_PROPERTIES_FILE}">
+            <and>
+                <not>
+                    <isset property="user.properties.file" />
+                </not>
+                <isset property="env.NETBEANS_USER_PROPERTIES_FILE" />
+            </and>
+        </condition>
+		
+		<condition property="maven.options" value="">
+            <and>
+                <not>
+                    <isset property="maven.options" />
+                </not>
+            </and>
+        </condition>
+        
+        <property name="transfer.user.properties.file" value="${user.properties.file}"/>
+        <property name="transfer.transfer.user.properties.file" value="${user.properties.file}"/>
+        <property name="transfer.transfer.transfer.user.properties.file" value="${user.properties.file}"/>
+        <property name="transfer.transfer.transfer.transfer.user.properties.file" value="${user.properties.file}"/>
+        <property name="transfer.transfer.transfer.transfer.transfer.user.properties.file" value="${user.properties.file}"/>
+        <property name="transfer.transfer.transfer.transfer.transfer.transfer.user.properties.file" value="${user.properties.file}"/>
+        
+        <tstamp>
+            <format property="init.time" pattern="yyyy-MM-dd HH:mm Z"
+                    offset="+2" unit="hour"/>
+        </tstamp>        
+                		
+        <if>
+            <available file="build-number.txt"/>
+            <then>
+                <property file="build-number.txt"/>
+            </then>
+            <else>
+                <antcallback target="git-revision" return="git.revision, git.revision-full"/>
+            </else>
+        </if>
+        
+    </target>
+
+    <target name="antdebug">
+        <!--<echo>${git.revision}</echo>-->
+        <echoproperties/>
+    </target>
+    
+</project>
